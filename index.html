@@ -1,0 +1,2203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>House Of AI</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg0: #040C1C;
+      --bg1: #07132A;
+      --bg2: #0C1E3E;
+      --card: rgba(255,255,255,0.035);
+      --card-border: rgba(255,255,255,0.07);
+      --card-hover: rgba(255,255,255,0.055);
+      --teal: #5BE3D6;
+      --blue: #7AA2FF;
+      --purple: #9B8CFF;
+      --text: #EDF2FF;
+      --text2: rgba(237,242,255,0.55);
+      --text3: rgba(237,242,255,0.3);
+      --input-bg: rgba(255,255,255,0.055);
+      --input-border: rgba(255,255,255,0.1);
+      --input-focus: rgba(91,227,214,0.35);
+      --rank1: #5BE3D6;
+      --rank2: #7AA2FF;
+      --rank3: #9B8CFF;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg0);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #root { height: 100%; }
+
+    ::selection { background: rgba(91,227,214,0.25); }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.22); }
+
+    /* ── Layout ── */
+    .app {
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(91,227,214,0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 80% 60%, rgba(122,162,255,0.06) 0%, transparent 60%),
+        var(--bg0);
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 32px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: linear-gradient(to bottom, rgba(4,12,28,0.95) 0%, rgba(4,12,28,0) 100%);
+      backdrop-filter: blur(0px);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--teal), var(--blue));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: #040C1C;
+      flex-shrink: 0;
+    }
+
+    .logo-name {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text);
+    }
+
+    .logo-name span {
+      color: var(--teal);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hdr-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border: 1px solid var(--card-border);
+      border-radius: 9px;
+      background: var(--card);
+      color: var(--text2);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .hdr-btn:hover {
+      background: var(--card-hover);
+      border-color: rgba(255,255,255,0.14);
+      color: var(--text);
+    }
+
+    .hdr-btn.active {
+      background: rgba(91,227,214,0.1);
+      border-color: rgba(91,227,214,0.3);
+      color: var(--teal);
+    }
+
+    /* ── Main ── */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 24px 80px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center;
+      padding: 64px 0 48px;
+      max-width: 680px;
+      width: 100%;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 99px;
+      border: 1px solid rgba(91,227,214,0.25);
+      background: rgba(91,227,214,0.08);
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 24px;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--teal);
+      box-shadow: 0 0 8px var(--teal);
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .hero h1 {
+      font-size: clamp(38px, 5.5vw, 58px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.08;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--teal) 0%, var(--blue) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 17px;
+      color: var(--text2);
+      max-width: 440px;
+      margin: 0 auto;
+    }
+
+    /* ── Search box ── */
+    .search-wrap {
+      width: 100%;
+      max-width: 680px;
+      margin-bottom: 16px;
+    }
+
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+      background: var(--input-bg);
+      border: 1.5px solid var(--input-border);
+      border-radius: 16px;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+      overflow: hidden;
+    }
+
+    .search-box:focus-within {
+      border-color: rgba(91,227,214,0.45);
+      background: rgba(255,255,255,0.07);
+      box-shadow: 0 0 0 4px rgba(91,227,214,0.1), 0 8px 32px rgba(0,0,0,0.3);
+    }
+
+    .search-icon {
+      flex-shrink: 0;
+      width: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text3);
+      font-size: 18px;
+      pointer-events: none;
+    }
+
+    .search-input {
+      flex: 1;
+      height: 58px;
+      border: 0;
+      background: transparent;
+      color: var(--text);
+      font: inherit;
+      font-size: 16px;
+      outline: none;
+      padding: 0 8px 0 0;
+    }
+
+    .search-input::placeholder {
+      color: var(--text3);
+    }
+
+    .search-submit {
+      flex-shrink: 0;
+      margin: 6px;
+      height: 46px;
+      padding: 0 22px;
+      border: 0;
+      border-radius: 11px;
+      background: linear-gradient(135deg, var(--teal), var(--blue));
+      color: #040C1C;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+      white-space: nowrap;
+      letter-spacing: 0.01em;
+    }
+
+    .search-submit:hover { opacity: 0.88; }
+    .search-submit:active { transform: scale(0.97); }
+
+    /* ── Suggestion chips ── */
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      max-width: 680px;
+      width: 100%;
+      margin-bottom: 48px;
+    }
+
+    .chip {
+      padding: 7px 14px;
+      border: 1px solid var(--card-border);
+      border-radius: 99px;
+      background: var(--card);
+      color: var(--text2);
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .chip:hover {
+      background: var(--card-hover);
+      border-color: rgba(91,227,214,0.3);
+      color: var(--teal);
+    }
+
+    /* ── Follow-up ── */
+    .followup-wrap {
+      width: 100%;
+      max-width: 680px;
+      margin-bottom: 32px;
+      animation: slideUp 0.25s ease-out;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .followup-card {
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      background: var(--card);
+      padding: 20px;
+    }
+
+    .followup-step {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 8px;
+    }
+
+    .followup-q {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .followup-opts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .followup-opt {
+      padding: 8px 16px;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.04);
+      color: var(--text2);
+      font: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .followup-opt:hover {
+      background: rgba(91,227,214,0.1);
+      border-color: rgba(91,227,214,0.35);
+      color: var(--teal);
+    }
+
+    .followup-opt.selected {
+      background: rgba(91,227,214,0.12);
+      border-color: rgba(91,227,214,0.45);
+      color: var(--teal);
+    }
+
+    .followup-skip {
+      margin-top: 14px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--text3);
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+
+    .followup-skip:hover { color: var(--text2); }
+
+    /* ── Results ── */
+    .results-wrap {
+      width: 100%;
+      max-width: 760px;
+      animation: slideUp 0.3s ease-out;
+    }
+
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .results-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .results-category-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: rgba(91,227,214,0.12);
+      border: 1px solid rgba(91,227,214,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: var(--teal);
+    }
+
+    .results-h {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .results-sub {
+      font-size: 13px;
+      color: var(--text2);
+      margin-top: 1px;
+    }
+
+    .results-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      background: var(--card);
+      color: var(--text2);
+      font: inherit;
+      font-size: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+
+    .icon-btn:hover {
+      background: var(--card-hover);
+      color: var(--text);
+    }
+
+    .icon-btn.active {
+      background: rgba(91,227,214,0.1);
+      border-color: rgba(91,227,214,0.25);
+      color: var(--teal);
+    }
+
+    .tool-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* ── Tool card ── */
+    .tool-card {
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      background: var(--card);
+      padding: 20px 22px;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+      cursor: default;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tool-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.2s;
+      border-radius: inherit;
+    }
+
+    .tool-card:hover {
+      background: var(--card-hover);
+      border-color: rgba(255,255,255,0.12);
+    }
+
+    .tool-card.rank-1 { border-color: rgba(91,227,214,0.2); }
+    .tool-card.rank-1:hover { border-color: rgba(91,227,214,0.35); }
+    .tool-card.rank-2 { border-color: rgba(122,162,255,0.15); }
+    .tool-card.rank-2:hover { border-color: rgba(122,162,255,0.3); }
+
+    .tool-card-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .tool-glyph {
+      width: 42px;
+      height: 42px;
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .tool-meta {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .tool-name-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 3px;
+    }
+
+    .tool-rank {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      padding: 2px 7px;
+      border-radius: 5px;
+    }
+
+    .rank-1 .tool-rank { background: rgba(91,227,214,0.15); color: var(--teal); }
+    .rank-2 .tool-rank { background: rgba(122,162,255,0.15); color: var(--blue); }
+    .rank-3 .tool-rank { background: rgba(155,140,255,0.15); color: var(--purple); }
+
+    .tool-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .tool-tagline {
+      font-size: 13.5px;
+      color: var(--text2);
+    }
+
+    .tool-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .tool-score {
+      display: flex;
+      align-items: baseline;
+      gap: 2px;
+    }
+
+    .tool-score-num {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .rank-1 .tool-score-num { color: var(--teal); }
+    .rank-2 .tool-score-num { color: var(--blue); }
+    .rank-3 .tool-score-num { color: var(--purple); }
+
+    .tool-score-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--text3);
+      text-transform: uppercase;
+    }
+
+    .tool-fav {
+      width: 28px;
+      height: 28px;
+      border: 1px solid var(--card-border);
+      border-radius: 7px;
+      background: transparent;
+      color: var(--text3);
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+
+    .tool-fav:hover { background: rgba(255,200,100,0.1); border-color: rgba(255,200,100,0.3); color: #FFC864; }
+    .tool-fav.saved { background: rgba(255,200,100,0.1); border-color: rgba(255,200,100,0.3); color: #FFC864; }
+
+    .tool-reasoning {
+      font-size: 13.5px;
+      color: var(--text2);
+      line-height: 1.55;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+      margin-bottom: 14px;
+    }
+
+    .tool-reasoning::before {
+      content: '"';
+      opacity: 0.4;
+    }
+    .tool-reasoning::after {
+      content: '"';
+      opacity: 0.4;
+    }
+
+    .tool-footer {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tool-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      font-size: 12px;
+      color: var(--text2);
+      font-weight: 500;
+    }
+
+    .tool-badge-icon { opacity: 0.5; font-size: 11px; }
+
+    .tool-strengths {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-left: auto;
+    }
+
+    .strength-tag {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--text2);
+    }
+
+    .strength-tag::before {
+      content: '✓';
+      font-size: 10px;
+      opacity: 0.5;
+    }
+
+    /* ── Compare panel ── */
+    .compare-bar {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border: 1px solid rgba(91,227,214,0.3);
+      border-radius: 14px;
+      background: rgba(4,12,28,0.92);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      z-index: 200;
+      animation: slideUp 0.2s ease-out;
+    }
+
+    .compare-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--teal);
+    }
+
+    .compare-slot {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .compare-vs {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text3);
+      letter-spacing: 0.08em;
+    }
+
+    .compare-go {
+      padding: 7px 16px;
+      border: 0;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--teal), var(--blue));
+      color: #040C1C;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    .compare-go:hover { opacity: 0.85; }
+
+    .compare-cancel {
+      padding: 7px 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 9px;
+      background: transparent;
+      color: var(--text3);
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .compare-cancel:hover { color: var(--text2); border-color: rgba(255,255,255,0.2); }
+
+    .compare-check {
+      width: 22px;
+      height: 22px;
+      border: 1.5px solid var(--card-border);
+      border-radius: 5px;
+      background: transparent;
+      color: var(--text2);
+      font-size: 11px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+
+    .compare-check:hover { border-color: rgba(91,227,214,0.4); }
+    .compare-check.checked { background: rgba(91,227,214,0.15); border-color: rgba(91,227,214,0.5); color: var(--teal); }
+
+    /* ── Compare modal ── */
+    .compare-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(4,12,28,0.85);
+      backdrop-filter: blur(8px);
+      z-index: 300;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .compare-modal {
+      background: var(--bg1);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 28px;
+      width: 100%;
+      max-width: 720px;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: slideUp 0.2s ease-out;
+    }
+
+    .compare-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .compare-modal-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .compare-col-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .compare-col-glyph {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .compare-col-name {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .compare-col-tagline {
+      font-size: 12.5px;
+      color: var(--text2);
+      margin-top: 2px;
+    }
+
+    .compare-divider {
+      grid-column: 1/-1;
+      height: 1px;
+      background: var(--card-border);
+      margin: 8px 0;
+    }
+
+    .compare-row-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 6px;
+    }
+
+    .compare-row-val {
+      font-size: 14px;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .compare-score-big {
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+
+    .compare-winner-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 5px;
+      background: rgba(91,227,214,0.12);
+      border: 1px solid rgba(91,227,214,0.25);
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--teal);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    /* ── History drawer ── */
+    .history-drawer {
+      position: fixed;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 300px;
+      background: var(--bg1);
+      border-left: 1px solid var(--card-border);
+      z-index: 150;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.25s cubic-bezier(0.3, 0.7, 0.4, 1);
+    }
+
+    .history-drawer.open {
+      transform: translateX(0);
+      box-shadow: -16px 0 48px rgba(0,0,0,0.5);
+    }
+
+    .history-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .history-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .close-btn {
+      width: 28px;
+      height: 28px;
+      border: 0;
+      border-radius: 7px;
+      background: rgba(255,255,255,0.06);
+      color: var(--text2);
+      font: inherit;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+
+    .close-btn:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+
+    .history-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+    }
+
+    .history-section-label {
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text3);
+      padding: 8px 8px 6px;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+
+    .history-item:hover {
+      background: rgba(255,255,255,0.04);
+    }
+
+    .history-cat-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .history-item-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .history-item-prompt {
+      font-size: 13px;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: 500;
+    }
+
+    .history-item-when {
+      font-size: 11.5px;
+      color: var(--text3);
+      margin-top: 1px;
+    }
+
+    /* ── Empty state ── */
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      animation: slideUp 0.25s ease-out;
+    }
+
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.3;
+    }
+
+    .empty-h {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .empty-p {
+      font-size: 14px;
+      color: var(--text2);
+    }
+
+    /* ── New search button ── */
+    .new-search-btn {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 18px;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      background: var(--card);
+      color: var(--text2);
+      font: inherit;
+      font-size: 13.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .new-search-btn:hover {
+      background: var(--card-hover);
+      color: var(--text);
+    }
+
+    /* ── Category color dots ── */
+    .cat-image { background: #5BE3D6; }
+    .cat-research { background: #7AA2FF; }
+    .cat-video { background: #9B8CFF; }
+
+    /* ── Overlay backdrop for history ── */
+    .backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 140;
+    }
+
+    /* ── Fade the results when compare mode has 2 selected ── */
+    .tool-card.compare-dimmed {
+      opacity: 0.4;
+    }
+
+    .tool-card.compare-selected {
+      border-color: rgba(91,227,214,0.4) !important;
+      background: rgba(91,227,214,0.05) !important;
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+// ── data.jsx (inlined) ───────────────────────────────────────────────────────
+const TOOLS = {
+  imagineflux: {
+    id: "imagineflux",
+    name: "ImagineFlux",
+    tagline: "Photoreal image diffusion engine",
+    category: "image",
+    score: 96,
+    pricing: "Freemium · $12/mo",
+    speed: "8s avg",
+    color: "#5BE3D6",
+    glyph: "◐",
+    strengths: ["Photoreal humans", "Brand-safe outputs", "4K upscale"],
+  },
+  prismdraw: {
+    id: "prismdraw",
+    name: "PrismDraw",
+    tagline: "Stylized & illustrative generator",
+    category: "image",
+    score: 91,
+    pricing: "Free · Pro $9/mo",
+    speed: "5s avg",
+    color: "#7AA2FF",
+    glyph: "◇",
+    strengths: ["Vector-clean lines", "Style consistency", "Inpainting"],
+  },
+  monolith: {
+    id: "monolith",
+    name: "Monolith.art",
+    tagline: "Open-source image model hub",
+    category: "image",
+    score: 84,
+    pricing: "Free · Open source",
+    speed: "12s avg",
+    color: "#9B8CFF",
+    glyph: "◧",
+    strengths: ["No content limits", "Local install", "Custom LoRAs"],
+  },
+  deepresearch: {
+    id: "deepresearch",
+    name: "DeepResearch",
+    tagline: "Long-form research with citations",
+    category: "research",
+    score: 94,
+    pricing: "$20/mo",
+    speed: "2–4 min",
+    color: "#5BE3D6",
+    glyph: "◑",
+    strengths: ["Cites primary sources", "PDF ingestion", "Cross-references"],
+  },
+  scholarbeam: {
+    id: "scholarbeam",
+    name: "ScholarBeam",
+    tagline: "Academic search assistant",
+    category: "research",
+    score: 89,
+    pricing: "Free · Pro $15/mo",
+    speed: "Instant",
+    color: "#7AA2FF",
+    glyph: "◆",
+    strengths: ["Peer-review filter", "Citation graphs", "BibTeX export"],
+  },
+  brieflyai: {
+    id: "brieflyai",
+    name: "BrieflyAI",
+    tagline: "Fast summarization + Q&A",
+    category: "research",
+    score: 82,
+    pricing: "Free",
+    speed: "Instant",
+    color: "#9B8CFF",
+    glyph: "◔",
+    strengths: ["URL → summary", "Slack/Notion sync", "Quick answers"],
+  },
+  vidcraft: {
+    id: "vidcraft",
+    name: "VidCraft Studio",
+    tagline: "Timeline editor with AI cuts",
+    category: "video",
+    score: 95,
+    pricing: "$24/mo",
+    speed: "Realtime",
+    color: "#5BE3D6",
+    glyph: "▷",
+    strengths: ["Auto-cut on speech", "Captions", "Color match"],
+  },
+  reelforge: {
+    id: "reelforge",
+    name: "ReelForge",
+    tagline: "Short-form social video",
+    category: "video",
+    score: 88,
+    pricing: "Free · $10/mo",
+    speed: "30s render",
+    color: "#7AA2FF",
+    glyph: "▶",
+    strengths: ["Vertical templates", "Trend audio", "One-tap captions"],
+  },
+  framesmith: {
+    id: "framesmith",
+    name: "FrameSmith",
+    tagline: "Pro-grade NLE with AI assist",
+    category: "video",
+    score: 86,
+    pricing: "$39/mo",
+    speed: "Project-based",
+    color: "#9B8CFF",
+    glyph: "▣",
+    strengths: ["Multicam", "Object removal", "Plug-in ecosystem"],
+  },
+};
+const ROUTES = [
+  {
+    match: ["image", "picture", "photo", "logo", "art", "draw", "illustration", "generate"],
+    category: "image", title: "Image generation", icon: "◐",
+    tools: ["imagineflux", "prismdraw", "monolith"],
+    followups: [
+      { id: "style", q: "What style fits best?", opts: ["Photorealistic", "Illustrated", "Abstract", "Vector / flat"] },
+      { id: "use", q: "Where will you use it?", opts: ["Marketing", "Personal", "Print", "Social media"] },
+    ],
+  },
+  {
+    match: ["research", "paper", "study", "academic", "cite", "scholar", "summarize", "literature"],
+    category: "research", title: "AI research tool", icon: "◑",
+    tools: ["deepresearch", "scholarbeam", "brieflyai"],
+    followups: [
+      { id: "depth", q: "How deep does it need to go?", opts: ["Quick answer", "Cited summary", "Full lit review"] },
+      { id: "domain", q: "What's the domain?", opts: ["STEM", "Humanities", "Business", "General"] },
+    ],
+  },
+  {
+    match: ["video", "edit", "footage", "clip", "reel", "youtube", "tiktok", "movie", "film"],
+    category: "video", title: "Video editing", icon: "▷",
+    tools: ["vidcraft", "reelforge", "framesmith"],
+    followups: [
+      { id: "format", q: "What format are you cutting for?", opts: ["Long-form (YouTube)", "Short-form (Reels/TikTok)", "Cinematic", "Internal / corp"] },
+      { id: "skill", q: "Your editing comfort?", opts: ["Beginner", "Intermediate", "Pro"] },
+    ],
+  },
+];
+const SUGGESTIONS = [
+  "I'm looking for the best AI image generator",
+  "I'm searching for the best AI research tool",
+  "I want to know the best AI for editing videos",
+  "Help me write a wedding speech",
+];
+const HISTORY_SEED = [
+  { prompt: "Best AI for product photography", when: "2h ago", category: "image" },
+  { prompt: "Tool to summarize 40-page PDFs", when: "Yesterday", category: "research" },
+  { prompt: "Auto-caption my podcast clips", when: "3d ago", category: "video" },
+  { prompt: "Logo generator for coffee shop", when: "Last week", category: "image" },
+];
+function routePrompt(text) {
+  if (!text) return null;
+  const t = text.toLowerCase();
+  let best = null, bestHits = 0;
+  for (const r of ROUTES) {
+    const hits = r.match.reduce((n, k) => (t.includes(k) ? n + 1 : n), 0);
+    if (hits > bestHits) { best = r; bestHits = hits; }
+  }
+  return best;
+}
+function reasoningFor(toolId, route, refinements) {
+  const refs = Object.values(refinements || {}).filter(Boolean);
+  const base = {
+    imagineflux: `Top match for ${refs[0]?.toLowerCase() || "photoreal"} output. Highest score on brand-safe and resolution benchmarks.`,
+    prismdraw: `Strong on stylized work and vector-clean output. Best when consistency across a series matters.`,
+    monolith: `Free and open. Pick this if you want full control, local install, or custom-trained models.`,
+    deepresearch: `Best for ${refs[0]?.toLowerCase() || "deep"} work that needs citations you can defend.`,
+    scholarbeam: `Built for academic rigor — peer-review filter and citation graphs.`,
+    brieflyai: `Fastest path to a usable answer. Free tier covers most light research.`,
+    vidcraft: `Best balance of pro features and AI assists. Auto-cut alone saves hours.`,
+    reelforge: `Optimized for ${refs[0]?.toLowerCase().includes("short") ? "short-form" : "social"} — templates, trend audio, captions.`,
+    framesmith: `Pro NLE with deep plug-in support. Choose this if you're already in a serious workflow.`,
+  };
+  return base[toolId] || `Strong fit for ${route.title.toLowerCase()}.`;
+}
+window.HOA = { TOOLS, ROUTES, SUGGESTIONS, HISTORY_SEED, routePrompt, reasoningFor };
+</script>
+
+<script type="text/babel">
+// ── tweaks-panel.jsx (inlined) ───────────────────────────────────────────────
+const __TWEAKS_STYLE = `
+  .twk-panel{position:fixed;right:16px;bottom:16px;z-index:2147483646;width:280px;
+    max-height:calc(100vh - 32px);display:flex;flex-direction:column;
+    background:rgba(250,249,247,.78);color:#29261b;
+    -webkit-backdrop-filter:blur(24px) saturate(160%);backdrop-filter:blur(24px) saturate(160%);
+    border:.5px solid rgba(255,255,255,.6);border-radius:14px;
+    box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 12px 40px rgba(0,0,0,.18);
+    font:11.5px/1.4 ui-sans-serif,system-ui,-apple-system,sans-serif;overflow:hidden}
+  .twk-hd{display:flex;align-items:center;justify-content:space-between;
+    padding:10px 8px 10px 14px;cursor:move;user-select:none}
+  .twk-hd b{font-size:12px;font-weight:600;letter-spacing:.01em}
+  .twk-x{appearance:none;border:0;background:transparent;color:rgba(41,38,27,.55);
+    width:22px;height:22px;border-radius:6px;cursor:default;font-size:13px;line-height:1}
+  .twk-x:hover{background:rgba(0,0,0,.06);color:#29261b}
+  .twk-body{padding:2px 14px 14px;display:flex;flex-direction:column;gap:10px;
+    overflow-y:auto;overflow-x:hidden;min-height:0;
+    scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.15) transparent}
+  .twk-body::-webkit-scrollbar{width:8px}
+  .twk-body::-webkit-scrollbar-track{background:transparent;margin:2px}
+  .twk-body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:4px;
+    border:2px solid transparent;background-clip:content-box}
+  .twk-body::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.25);
+    border:2px solid transparent;background-clip:content-box}
+  .twk-row{display:flex;flex-direction:column;gap:5px}
+  .twk-row-h{flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
+  .twk-lbl{display:flex;justify-content:space-between;align-items:baseline;
+    color:rgba(41,38,27,.72)}
+  .twk-lbl>span:first-child{font-weight:500}
+  .twk-val{color:rgba(41,38,27,.5);font-variant-numeric:tabular-nums}
+  .twk-sect{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    color:rgba(41,38,27,.45);padding:10px 0 0}
+  .twk-sect:first-child{padding-top:0}
+  .twk-field{appearance:none;width:100%;height:26px;padding:0 8px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:7px;
+    background:rgba(255,255,255,.6);color:inherit;font:inherit;outline:none}
+  .twk-field:focus{border-color:rgba(0,0,0,.25);background:rgba(255,255,255,.85)}
+  select.twk-field{padding-right:22px;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='rgba(0,0,0,.5)' d='M0 0h10L5 6z'/></svg>");
+    background-repeat:no-repeat;background-position:right 8px center}
+  .twk-slider{appearance:none;-webkit-appearance:none;width:100%;height:4px;margin:6px 0;
+    border-radius:999px;background:rgba(0,0,0,.12);outline:none}
+  .twk-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+    width:14px;height:14px;border-radius:50%;background:#fff;
+    border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+  .twk-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
+    background:#fff;border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+  .twk-seg{position:relative;display:flex;padding:2px;border-radius:8px;
+    background:rgba(0,0,0,.06);user-select:none}
+  .twk-seg-thumb{position:absolute;top:2px;bottom:2px;border-radius:6px;
+    background:rgba(255,255,255,.9);box-shadow:0 1px 2px rgba(0,0,0,.12);
+    transition:left .15s cubic-bezier(.3,.7,.4,1),width .15s}
+  .twk-seg.dragging .twk-seg-thumb{transition:none}
+  .twk-seg button{appearance:none;position:relative;z-index:1;flex:1;border:0;
+    background:transparent;color:inherit;font:inherit;font-weight:500;min-height:22px;
+    border-radius:6px;cursor:default;padding:4px 6px;line-height:1.2;overflow-wrap:anywhere}
+  .twk-toggle{position:relative;width:32px;height:18px;border:0;border-radius:999px;
+    background:rgba(0,0,0,.15);transition:background .15s;cursor:default;padding:0}
+  .twk-toggle[data-on="1"]{background:#34c759}
+  .twk-toggle i{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;
+    background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+  .twk-toggle[data-on="1"] i{transform:translateX(14px)}
+  .twk-num{display:flex;align-items:center;height:26px;padding:0 0 0 8px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:7px;background:rgba(255,255,255,.6)}
+  .twk-num-lbl{font-weight:500;color:rgba(41,38,27,.6);cursor:ew-resize;
+    user-select:none;padding-right:8px}
+  .twk-num input{flex:1;min-width:0;height:100%;border:0;background:transparent;
+    font:inherit;font-variant-numeric:tabular-nums;text-align:right;padding:0 8px 0 0;
+    outline:none;color:inherit;-moz-appearance:textfield}
+  .twk-num input::-webkit-inner-spin-button,.twk-num input::-webkit-outer-spin-button{
+    -webkit-appearance:none;margin:0}
+  .twk-num-unit{padding-right:8px;color:rgba(41,38,27,.45)}
+  .twk-btn{appearance:none;height:26px;padding:0 12px;border:0;border-radius:7px;
+    background:rgba(0,0,0,.78);color:#fff;font:inherit;font-weight:500;cursor:default}
+  .twk-btn:hover{background:rgba(0,0,0,.88)}
+  .twk-btn.secondary{background:rgba(0,0,0,.06);color:inherit}
+  .twk-btn.secondary:hover{background:rgba(0,0,0,.1)}
+  .twk-swatch{appearance:none;-webkit-appearance:none;width:56px;height:22px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:6px;padding:0;cursor:default;
+    background:transparent;flex-shrink:0}
+  .twk-swatch::-webkit-color-swatch-wrapper{padding:0}
+  .twk-swatch::-webkit-color-swatch{border:0;border-radius:5.5px}
+  .twk-swatch::-moz-color-swatch{border:0;border-radius:5.5px}
+`;
+function useTweaks(defaults) {
+  const [values, setValues] = React.useState(defaults);
+  const setTweak = React.useCallback((keyOrEdits, val) => {
+    const edits = typeof keyOrEdits === 'object' && keyOrEdits !== null
+      ? keyOrEdits : { [keyOrEdits]: val };
+    setValues((prev) => ({ ...prev, ...edits }));
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits }, '*');
+  }, []);
+  return [values, setTweak];
+}
+function TweaksPanel({ title = 'Tweaks', children }) {
+  const [open, setOpen] = React.useState(false);
+  const dragRef = React.useRef(null);
+  const offsetRef = React.useRef({ x: 16, y: 16 });
+  const PAD = 16;
+  const clampToViewport = React.useCallback(() => {
+    const panel = dragRef.current;
+    if (!panel) return;
+    const w = panel.offsetWidth, h = panel.offsetHeight;
+    const maxRight = Math.max(PAD, window.innerWidth - w - PAD);
+    const maxBottom = Math.max(PAD, window.innerHeight - h - PAD);
+    offsetRef.current = {
+      x: Math.min(maxRight, Math.max(PAD, offsetRef.current.x)),
+      y: Math.min(maxBottom, Math.max(PAD, offsetRef.current.y)),
+    };
+    panel.style.right = offsetRef.current.x + 'px';
+    panel.style.bottom = offsetRef.current.y + 'px';
+  }, []);
+  React.useEffect(() => {
+    if (!open) return;
+    clampToViewport();
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', clampToViewport);
+      return () => window.removeEventListener('resize', clampToViewport);
+    }
+    const ro = new ResizeObserver(clampToViewport);
+    ro.observe(document.documentElement);
+    return () => ro.disconnect();
+  }, [open, clampToViewport]);
+  React.useEffect(() => {
+    const onMsg = (e) => {
+      const t = e?.data?.type;
+      if (t === '__activate_edit_mode') setOpen(true);
+      else if (t === '__deactivate_edit_mode') setOpen(false);
+    };
+    window.addEventListener('message', onMsg);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', onMsg);
+  }, []);
+  const dismiss = () => {
+    setOpen(false);
+    window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
+  };
+  const onDragStart = (e) => {
+    const panel = dragRef.current;
+    if (!panel) return;
+    const r = panel.getBoundingClientRect();
+    const sx = e.clientX, sy = e.clientY;
+    const startRight = window.innerWidth - r.right;
+    const startBottom = window.innerHeight - r.bottom;
+    const move = (ev) => {
+      offsetRef.current = {
+        x: startRight - (ev.clientX - sx),
+        y: startBottom - (ev.clientY - sy),
+      };
+      clampToViewport();
+    };
+    const up = () => {
+      window.removeEventListener('mousemove', move);
+      window.removeEventListener('mouseup', up);
+    };
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', up);
+  };
+  if (!open) return null;
+  return (
+    <>
+      <style>{__TWEAKS_STYLE}</style>
+      <div ref={dragRef} className="twk-panel" data-noncommentable=""
+           style={{ right: offsetRef.current.x, bottom: offsetRef.current.y }}>
+        <div className="twk-hd" onMouseDown={onDragStart}>
+          <b>{title}</b>
+          <button className="twk-x" aria-label="Close tweaks"
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={dismiss}>✕</button>
+        </div>
+        <div className="twk-body">{children}</div>
+      </div>
+    </>
+  );
+}
+function TweakSection({ label, children }) {
+  return (<><div className="twk-sect">{label}</div>{children}</>);
+}
+function TweakRow({ label, value, children, inline = false }) {
+  return (
+    <div className={inline ? 'twk-row twk-row-h' : 'twk-row'}>
+      <div className="twk-lbl">
+        <span>{label}</span>
+        {value != null && <span className="twk-val">{value}</span>}
+      </div>
+      {children}
+    </div>
+  );
+}
+function TweakSlider({ label, value, min = 0, max = 100, step = 1, unit = '', onChange }) {
+  return (
+    <TweakRow label={label} value={`${value}${unit}`}>
+      <input type="range" className="twk-slider" min={min} max={max} step={step}
+             value={value} onChange={(e) => onChange(Number(e.target.value))} />
+    </TweakRow>
+  );
+}
+function TweakToggle({ label, value, onChange }) {
+  return (
+    <div className="twk-row twk-row-h">
+      <div className="twk-lbl"><span>{label}</span></div>
+      <button type="button" className="twk-toggle" data-on={value ? '1' : '0'}
+              role="switch" aria-checked={!!value}
+              onClick={() => onChange(!value)}><i /></button>
+    </div>
+  );
+}
+function TweakRadio({ label, value, options, onChange }) {
+  const trackRef = React.useRef(null);
+  const [dragging, setDragging] = React.useState(false);
+  const opts = options.map((o) => (typeof o === 'object' ? o : { value: o, label: o }));
+  const idx = Math.max(0, opts.findIndex((o) => o.value === value));
+  const n = opts.length;
+  const valueRef = React.useRef(value);
+  valueRef.current = value;
+  const segAt = (clientX) => {
+    const r = trackRef.current.getBoundingClientRect();
+    const inner = r.width - 4;
+    const i = Math.floor(((clientX - r.left - 2) / inner) * n);
+    return opts[Math.max(0, Math.min(n - 1, i))].value;
+  };
+  const onPointerDown = (e) => {
+    setDragging(true);
+    const v0 = segAt(e.clientX);
+    if (v0 !== valueRef.current) onChange(v0);
+    const move = (ev) => { if (!trackRef.current) return; const v = segAt(ev.clientX); if (v !== valueRef.current) onChange(v); };
+    const up = () => { setDragging(false); window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
+  return (
+    <TweakRow label={label}>
+      <div ref={trackRef} role="radiogroup" onPointerDown={onPointerDown}
+           className={dragging ? 'twk-seg dragging' : 'twk-seg'}>
+        <div className="twk-seg-thumb"
+             style={{ left: `calc(2px + ${idx} * (100% - 4px) / ${n})`, width: `calc((100% - 4px) / ${n})` }} />
+        {opts.map((o) => (
+          <button key={o.value} type="button" role="radio" aria-checked={o.value === value}>{o.label}</button>
+        ))}
+      </div>
+    </TweakRow>
+  );
+}
+function TweakSelect({ label, value, options, onChange }) {
+  return (
+    <TweakRow label={label}>
+      <select className="twk-field" value={value} onChange={(e) => onChange(e.target.value)}>
+        {options.map((o) => { const v = typeof o === 'object' ? o.value : o; const l = typeof o === 'object' ? o.label : o; return <option key={v} value={v}>{l}</option>; })}
+      </select>
+    </TweakRow>
+  );
+}
+function TweakText({ label, value, placeholder, onChange }) {
+  return (
+    <TweakRow label={label}>
+      <input className="twk-field" type="text" value={value} placeholder={placeholder}
+             onChange={(e) => onChange(e.target.value)} />
+    </TweakRow>
+  );
+}
+function TweakNumber({ label, value, min, max, step = 1, unit = '', onChange }) {
+  const clamp = (n) => { if (min != null && n < min) return min; if (max != null && n > max) return max; return n; };
+  const startRef = React.useRef({ x: 0, val: 0 });
+  const onScrubStart = (e) => {
+    e.preventDefault();
+    startRef.current = { x: e.clientX, val: value };
+    const decimals = (String(step).split('.')[1] || '').length;
+    const move = (ev) => { const dx = ev.clientX - startRef.current.x; const raw = startRef.current.val + dx * step; const snapped = Math.round(raw / step) * step; onChange(clamp(Number(snapped.toFixed(decimals)))); };
+    const up = () => { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
+  return (
+    <div className="twk-num">
+      <span className="twk-num-lbl" onPointerDown={onScrubStart}>{label}</span>
+      <input type="number" value={value} min={min} max={max} step={step}
+             onChange={(e) => onChange(clamp(Number(e.target.value)))} />
+      {unit && <span className="twk-num-unit">{unit}</span>}
+    </div>
+  );
+}
+function TweakColor({ label, value, onChange }) {
+  return (
+    <div className="twk-row twk-row-h">
+      <div className="twk-lbl"><span>{label}</span></div>
+      <input type="color" className="twk-swatch" value={value}
+             onChange={(e) => onChange(e.target.value)} />
+    </div>
+  );
+}
+function TweakButton({ label, onClick, secondary = false }) {
+  return (
+    <button type="button" className={secondary ? 'twk-btn secondary' : 'twk-btn'}
+            onClick={onClick}>{label}</button>
+  );
+}
+Object.assign(window, {
+  useTweaks, TweaksPanel, TweakSection, TweakRow,
+  TweakSlider, TweakToggle, TweakRadio, TweakSelect,
+  TweakText, TweakNumber, TweakColor, TweakButton,
+});
+</script>
+
+<script type="text/babel">
+
+const { TOOLS, ROUTES, SUGGESTIONS, HISTORY_SEED, routePrompt, reasoningFor } = window.HOA;
+
+// ── Tweaks defaults ──────────────────────────────────────────────────────────
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "primaryColor": "#5BE3D6",
+  "topN": 3,
+  "layout": "cards",
+  "showScores": true,
+  "showStrengths": true
+}/*EDITMODE-END*/;
+
+// Category colours
+const CAT_COLOR = { image: '#5BE3D6', research: '#7AA2FF', video: '#9B8CFF' };
+
+function App() {
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+  // Search / conversation state
+  const [inputVal, setInputVal] = React.useState('');
+  const [submitted, setSubmitted] = React.useState('');
+  const [phase, setPhase] = React.useState('idle'); // 'idle' | 'followup' | 'results'
+  const [followupIdx, setFollowupIdx] = React.useState(0);
+  const [refinements, setRefinements] = React.useState({});
+  const [route, setRoute] = React.useState(null);
+
+  // UI state
+  const [favorites, setFavorites] = React.useState(new Set());
+  const [history, setHistory] = React.useState(HISTORY_SEED);
+  const [showHistory, setShowHistory] = React.useState(false);
+  const [compareMode, setCompareMode] = React.useState(false);
+  const [comparing, setComparing] = React.useState([]);
+  const [showCompareModal, setShowCompareModal] = React.useState(false);
+  const inputRef = React.useRef(null);
+
+  const submit = (text) => {
+    const q = (text || inputVal).trim();
+    if (!q) return;
+    const found = routePrompt(q);
+    if (!found) {
+      setRoute(null);
+      setSubmitted(q);
+      setPhase('results');
+    } else {
+      setRoute(found);
+      setSubmitted(q);
+      setRefinements({});
+      setFollowupIdx(0);
+      setPhase('followup');
+    }
+    setHistory((prev) => [{ prompt: q, when: 'Just now', category: found?.category || 'image' }, ...prev.slice(0, 9)]);
+    setCompareMode(false);
+    setComparing([]);
+  };
+
+  const handleFollowupOpt = (opt) => {
+    if (!route) return;
+    const fu = route.followups[followupIdx];
+    const next = { ...refinements, [fu.id]: opt };
+    setRefinements(next);
+    if (followupIdx + 1 < route.followups.length) {
+      setFollowupIdx(followupIdx + 1);
+    } else {
+      setPhase('results');
+    }
+  };
+
+  const skipFollowup = () => setPhase('results');
+
+  const reset = () => {
+    setPhase('idle');
+    setSubmitted('');
+    setInputVal('');
+    setRoute(null);
+    setRefinements({});
+    setFollowupIdx(0);
+    setCompareMode(false);
+    setComparing([]);
+    setTimeout(() => inputRef.current?.focus(), 50);
+  };
+
+  const toggleFav = (id) => {
+    setFavorites((prev) => {
+      const n = new Set(prev);
+      n.has(id) ? n.delete(id) : n.add(id);
+      return n;
+    });
+  };
+
+  const toggleCompareSelect = (id) => {
+    setComparing((prev) => {
+      if (prev.includes(id)) return prev.filter((x) => x !== id);
+      if (prev.length >= 2) return [prev[1], id];
+      return [...prev, id];
+    });
+  };
+
+  const topN = Math.max(1, Math.min(3, t.topN || 3));
+  const displayTools = route ? route.tools.slice(0, topN) : [];
+
+  return (
+    <div className="app">
+      <Header
+        showHistory={showHistory}
+        onToggleHistory={() => setShowHistory((v) => !v)}
+        compareMode={compareMode}
+        onToggleCompare={() => { setCompareMode((v) => !v); setComparing([]); }}
+        phase={phase}
+      />
+
+      <main className="main">
+        {phase === 'idle' && (
+          <Hero
+            inputRef={inputRef}
+            inputVal={inputVal}
+            setInputVal={setInputVal}
+            onSubmit={submit}
+          />
+        )}
+
+        {phase === 'followup' && route && (
+          <FollowupPhase
+            submitted={submitted}
+            route={route}
+            followupIdx={followupIdx}
+            refinements={refinements}
+            onOpt={handleFollowupOpt}
+            onSkip={skipFollowup}
+          />
+        )}
+
+        {phase === 'results' && (
+          <ResultsPhase
+            route={route}
+            submitted={submitted}
+            refinements={refinements}
+            topN={topN}
+            displayTools={displayTools}
+            tweaks={t}
+            favorites={favorites}
+            onToggleFav={toggleFav}
+            compareMode={compareMode}
+            comparing={comparing}
+            onCompareSelect={toggleCompareSelect}
+            onReset={reset}
+          />
+        )}
+      </main>
+
+      {/* History drawer */}
+      {showHistory && <div className="backdrop" onClick={() => setShowHistory(false)} />}
+      <HistoryDrawer
+        open={showHistory}
+        history={history}
+        onClose={() => setShowHistory(false)}
+        onSelect={(p) => { setInputVal(p); setShowHistory(false); submit(p); }}
+      />
+
+      {/* Compare bar */}
+      {compareMode && comparing.length > 0 && !showCompareModal && (
+        <CompareBar
+          comparing={comparing}
+          onGo={() => setShowCompareModal(true)}
+          onCancel={() => { setCompareMode(false); setComparing([]); }}
+        />
+      )}
+
+      {/* Compare modal */}
+      {showCompareModal && comparing.length === 2 && (
+        <CompareModal
+          toolA={TOOLS[comparing[0]]}
+          toolB={TOOLS[comparing[1]]}
+          route={route}
+          refinements={refinements}
+          onClose={() => setShowCompareModal(false)}
+        />
+      )}
+
+      {/* Tweaks panel */}
+      <TweaksPanel title="Tweaks">
+        <TweakSection label="Accent" />
+        <TweakColor label="Primary colour" value={t.primaryColor}
+                    onChange={(v) => setTweak('primaryColor', v)} />
+        <TweakSection label="Results" />
+        <TweakSlider label="Top results" value={topN} min={1} max={3} step={1}
+                     onChange={(v) => setTweak('topN', v)} />
+        <TweakToggle label="Show scores" value={t.showScores}
+                     onChange={(v) => setTweak('showScores', v)} />
+        <TweakToggle label="Show strengths" value={t.showStrengths}
+                     onChange={(v) => setTweak('showStrengths', v)} />
+        <TweakSection label="Layout" />
+        <TweakRadio label="View" value={t.layout}
+                    options={['cards', 'list']}
+                    onChange={(v) => setTweak('layout', v)} />
+      </TweaksPanel>
+    </div>
+  );
+}
+
+// ── Header ────────────────────────────────────────────────────────────────────
+function Header({ showHistory, onToggleHistory, compareMode, onToggleCompare, phase }) {
+  return (
+    <header className="header">
+      <div className="logo">
+        <div className="logo-mark">H</div>
+        <span className="logo-name">House <span>Of</span> AI</span>
+      </div>
+      <div className="header-actions">
+        {phase === 'results' && (
+          <button
+            className={`hdr-btn${compareMode ? ' active' : ''}`}
+            onClick={onToggleCompare}
+          >
+            <span style={{ fontSize: 13 }}>⇄</span> Compare
+          </button>
+        )}
+        <button
+          className={`hdr-btn${showHistory ? ' active' : ''}`}
+          onClick={onToggleHistory}
+        >
+          <span style={{ fontSize: 12 }}>◷</span> History
+        </button>
+      </div>
+    </header>
+  );
+}
+
+// ── Hero ──────────────────────────────────────────────────────────────────────
+function Hero({ inputRef, inputVal, setInputVal, onSubmit }) {
+  const handleKey = (e) => {
+    if (e.key === 'Enter') onSubmit();
+  };
+
+  return (
+    <>
+      <div className="hero">
+        <div className="hero-eyebrow">Live · 200+ AI tools indexed</div>
+        <h1>Find the <em>perfect AI</em><br />for anything</h1>
+        <p className="hero-sub">
+          Describe what you need — we'll match you to the best AI tool, ranked by fit.
+        </p>
+      </div>
+
+      <div className="search-wrap">
+        <div className="search-box">
+          <div className="search-icon">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+          </div>
+          <input
+            ref={inputRef}
+            className="search-input"
+            type="text"
+            placeholder="e.g. best AI image generator, research tool, video editor…"
+            value={inputVal}
+            onChange={(e) => setInputVal(e.target.value)}
+            onKeyDown={handleKey}
+            autoFocus
+          />
+          <button className="search-submit" onClick={() => onSubmit()}>
+            Find tools →
+          </button>
+        </div>
+      </div>
+
+      <div className="chips">
+        {SUGGESTIONS.map((s) => (
+          <button key={s} className="chip" onClick={() => onSubmit(s)}>
+            {s}
+          </button>
+        ))}
+      </div>
+    </>
+  );
+}
+
+// ── Followup Phase ────────────────────────────────────────────────────────────
+function FollowupPhase({ submitted, route, followupIdx, refinements, onOpt, onSkip }) {
+  const fu = route.followups[followupIdx];
+  const total = route.followups.length;
+
+  return (
+    <div style={{ width: '100%', maxWidth: 680, paddingTop: 48 }}>
+      <div style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 6,
+          padding: '5px 12px', borderRadius: 8,
+          background: 'rgba(255,255,255,0.04)',
+          border: '1px solid rgba(255,255,255,0.07)',
+          fontSize: 13, color: 'var(--text2)'
+        }}>
+          <span style={{ opacity: 0.5 }}>◷</span>
+          <span style={{ fontWeight: 600, color: 'var(--text)' }}>{route.icon}</span>
+          <span>Finding {route.title}</span>
+        </div>
+      </div>
+
+      <div className="followup-wrap" style={{ marginBottom: 0 }}>
+        <div className="followup-card">
+          <div className="followup-step">
+            Question {followupIdx + 1} of {total}
+          </div>
+          <div className="followup-q">{fu.q}</div>
+          <div className="followup-opts">
+            {fu.opts.map((opt) => (
+              <button
+                key={opt}
+                className={`followup-opt${refinements[fu.id] === opt ? ' selected' : ''}`}
+                onClick={() => onOpt(opt)}
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
+          <button className="followup-skip" onClick={onSkip}>
+            Skip — show all results
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Results Phase ─────────────────────────────────────────────────────────────
+function ResultsPhase({
+  route, submitted, refinements, topN, displayTools,
+  tweaks, favorites, onToggleFav,
+  compareMode, comparing, onCompareSelect, onReset
+}) {
+  if (!route) {
+    return (
+      <div style={{ width: '100%', maxWidth: 680, paddingTop: 64 }}>
+        <div className="empty-state">
+          <div className="empty-icon">◎</div>
+          <div className="empty-h">No match found</div>
+          <div className="empty-p" style={{ marginBottom: 24 }}>
+            Try describing your need differently — image, research, or video?
+          </div>
+          <button className="new-search-btn" onClick={onReset}>← New search</button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="results-wrap" style={{ paddingTop: 40 }}>
+      <div className="results-header">
+        <div className="results-title">
+          <div className="results-category-icon">{route.icon}</div>
+          <div>
+            <div className="results-h">Top {topN} for {route.title.toLowerCase()}</div>
+            <div className="results-sub">"{submitted}"</div>
+          </div>
+        </div>
+        <div className="results-actions">
+          <button className="new-search-btn" onClick={onReset}>← New search</button>
+        </div>
+      </div>
+
+      {compareMode && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14,
+          padding: '9px 14px', borderRadius: 10,
+          background: 'rgba(91,227,214,0.07)',
+          border: '1px solid rgba(91,227,214,0.2)',
+          fontSize: 13, color: 'var(--teal)', fontWeight: 500
+        }}>
+          <span style={{ fontSize: 14 }}>⇄</span>
+          Select two tools to compare · {comparing.length}/2 selected
+        </div>
+      )}
+
+      <div className={`tool-list${tweaks.layout === 'list' ? ' list-mode' : ''}`}>
+        {displayTools.map((id, i) => {
+          const tool = TOOLS[id];
+          if (!tool) return null;
+          const rank = i + 1;
+          const reasoning = reasoningFor(id, route, refinements);
+          const isFav = favorites.has(id);
+          const isComparing = comparing.includes(id);
+          const compareDimmed = compareMode && comparing.length === 2 && !isComparing;
+          return (
+            <ToolCard
+              key={id}
+              tool={tool}
+              rank={rank}
+              reasoning={reasoning}
+              isFav={isFav}
+              onToggleFav={() => onToggleFav(id)}
+              tweaks={tweaks}
+              compareMode={compareMode}
+              isComparing={isComparing}
+              compareDimmed={compareDimmed}
+              onCompareSelect={() => onCompareSelect(id)}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ── Tool Card ─────────────────────────────────────────────────────────────────
+function ToolCard({
+  tool, rank, reasoning, isFav, onToggleFav,
+  tweaks, compareMode, isComparing, compareDimmed, onCompareSelect
+}) {
+  const rankClass = `tool-card rank-${rank}${compareDimmed ? ' compare-dimmed' : ''}${isComparing ? ' compare-selected' : ''}`;
+  const rankColor = rank === 1 ? 'var(--teal)' : rank === 2 ? 'var(--blue)' : 'var(--purple)';
+
+  return (
+    <div className={rankClass}>
+      <div className="tool-card-top">
+        <div className="tool-glyph" style={{ background: tool.color + '18', color: tool.color }}>
+          {tool.glyph}
+        </div>
+        <div className="tool-meta">
+          <div className="tool-name-row">
+            <span className="tool-rank">#{rank}</span>
+            <span className="tool-name">{tool.name}</span>
+          </div>
+          <div className="tool-tagline">{tool.tagline}</div>
+        </div>
+        <div className="tool-right">
+          {tweaks.showScores && (
+            <div className="tool-score">
+              <span className="tool-score-num" style={{ color: rankColor }}>{tool.score}</span>
+              <span className="tool-score-label">/100</span>
+            </div>
+          )}
+          <div style={{ display: 'flex', gap: 6 }}>
+            {compareMode && (
+              <button
+                className={`compare-check${isComparing ? ' checked' : ''}`}
+                onClick={onCompareSelect}
+                title={isComparing ? 'Remove from compare' : 'Add to compare'}
+              >
+                {isComparing ? '✓' : ''}
+              </button>
+            )}
+            <button
+              className={`tool-fav${isFav ? ' saved' : ''}`}
+              onClick={onToggleFav}
+              title={isFav ? 'Remove from saved' : 'Save tool'}
+            >
+              {isFav ? '★' : '☆'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="tool-reasoning">{reasoning}</div>
+
+      <div className="tool-footer">
+        <div className="tool-badge">
+          <span className="tool-badge-icon">💳</span>
+          {tool.pricing}
+        </div>
+        <div className="tool-badge">
+          <span className="tool-badge-icon">⚡</span>
+          {tool.speed}
+        </div>
+        {tweaks.showStrengths && (
+          <div className="tool-strengths">
+            {tool.strengths.slice(0, 2).map((s) => (
+              <span key={s} className="strength-tag">{s}</span>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── History Drawer ────────────────────────────────────────────────────────────
+function HistoryDrawer({ open, history, onClose, onSelect }) {
+  return (
+    <div className={`history-drawer${open ? ' open' : ''}`}>
+      <div className="history-header">
+        <span className="history-title">Recent searches</span>
+        <button className="close-btn" onClick={onClose}>✕</button>
+      </div>
+      <div className="history-body">
+        <div className="history-section-label">Today & recent</div>
+        {history.map((item, i) => (
+          <div key={i} className="history-item" onClick={() => onSelect(item.prompt)}>
+            <div className={`history-cat-dot cat-${item.category}`} />
+            <div className="history-item-text">
+              <div className="history-item-prompt">{item.prompt}</div>
+              <div className="history-item-when">{item.when}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Compare Bar ───────────────────────────────────────────────────────────────
+function CompareBar({ comparing, onGo, onCancel }) {
+  const a = TOOLS[comparing[0]];
+  const b = TOOLS[comparing[1]];
+  return (
+    <div className="compare-bar">
+      <span className="compare-label">⇄</span>
+      {a && <div className="compare-slot">{a.glyph} {a.name}</div>}
+      {b && (
+        <>
+          <span className="compare-vs">VS</span>
+          <div className="compare-slot">{b.glyph} {b.name}</div>
+        </>
+      )}
+      {comparing.length === 2 && (
+        <button className="compare-go" onClick={onGo}>Compare →</button>
+      )}
+      <button className="compare-cancel" onClick={onCancel}>Cancel</button>
+    </div>
+  );
+}
+
+// ── Compare Modal ─────────────────────────────────────────────────────────────
+function CompareModal({ toolA, toolB, route, refinements, onClose }) {
+  const winner = toolA.score > toolB.score ? 'A' : toolB.score > toolA.score ? 'B' : null;
+
+  const Row = ({ label, valA, valB }) => (
+    <>
+      <div>
+        <div className="compare-row-label">{label}</div>
+        <div className="compare-row-val">{valA}</div>
+      </div>
+      <div>
+        <div className="compare-row-label">{label}</div>
+        <div className="compare-row-val">{valB}</div>
+      </div>
+    </>
+  );
+
+  return (
+    <div className="compare-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="compare-modal">
+        <div className="compare-modal-header">
+          <div className="compare-modal-title">Side-by-side comparison</div>
+          <button className="close-btn" onClick={onClose}>✕</button>
+        </div>
+
+        <div className="compare-grid">
+          {/* Headers */}
+          <div>
+            <div className="compare-col-header">
+              <div className="compare-col-glyph" style={{ background: toolA.color + '18', color: toolA.color }}>
+                {toolA.glyph}
+              </div>
+              <div>
+                <div className="compare-col-name" style={{ color: toolA.color }}>{toolA.name}</div>
+                <div className="compare-col-tagline">{toolA.tagline}</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="compare-col-header">
+              <div className="compare-col-glyph" style={{ background: toolB.color + '18', color: toolB.color }}>
+                {toolB.glyph}
+              </div>
+              <div>
+                <div className="compare-col-name" style={{ color: toolB.color }}>{toolB.name}</div>
+                <div className="compare-col-tagline">{toolB.tagline}</div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ gridColumn: '1/-1', height: 1, background: 'rgba(255,255,255,0.07)', margin: '0 0 8px' }} />
+
+          {/* Score */}
+          <div>
+            <div className="compare-row-label">Match score</div>
+            <div className="compare-score-big" style={{ color: toolA.color }}>{toolA.score}</div>
+            {winner === 'A' && <div className="compare-winner-badge">✓ Higher score</div>}
+          </div>
+          <div>
+            <div className="compare-row-label">Match score</div>
+            <div className="compare-score-big" style={{ color: toolB.color }}>{toolB.score}</div>
+            {winner === 'B' && <div className="compare-winner-badge">✓ Higher score</div>}
+          </div>
+
+          <div style={{ gridColumn: '1/-1', height: 1, background: 'rgba(255,255,255,0.07)', margin: '4px 0' }} />
+
+          <Row label="Pricing" valA={toolA.pricing} valB={toolB.pricing} />
+
+          <div style={{ gridColumn: '1/-1', height: 1, background: 'rgba(255,255,255,0.07)', margin: '4px 0' }} />
+
+          <Row label="Speed" valA={toolA.speed} valB={toolB.speed} />
+
+          <div style={{ gridColumn: '1/-1', height: 1, background: 'rgba(255,255,255,0.07)', margin: '4px 0' }} />
+
+          {/* Strengths */}
+          <div>
+            <div className="compare-row-label">Strengths</div>
+            {toolA.strengths.map((s) => (
+              <div key={s} className="strength-tag" style={{ marginBottom: 4, fontSize: 13 }}>{s}</div>
+            ))}
+          </div>
+          <div>
+            <div className="compare-row-label">Strengths</div>
+            {toolB.strengths.map((s) => (
+              <div key={s} className="strength-tag" style={{ marginBottom: 4, fontSize: 13 }}>{s}</div>
+            ))}
+          </div>
+
+          <div style={{ gridColumn: '1/-1', height: 1, background: 'rgba(255,255,255,0.07)', margin: '4px 0' }} />
+
+          {/* Why it matched */}
+          {route && (
+            <>
+              <div>
+                <div className="compare-row-label">Why it matched</div>
+                <div className="tool-reasoning" style={{ marginTop: 6 }}>
+                  {reasoningFor(toolA.id, route, refinements)}
+                </div>
+              </div>
+              <div>
+                <div className="compare-row-label">Why it matched</div>
+                <div className="tool-reasoning" style={{ marginTop: 6 }}>
+                  {reasoningFor(toolB.id, route, refinements)}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
