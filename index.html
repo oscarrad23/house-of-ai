@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>House Of AI</title>
+  <title>Scout — Find the perfect AI</title>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -94,9 +94,9 @@
     }
 
     .logo-name {
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: -0.01em;
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
       color: var(--text);
     }
 
@@ -1028,6 +1028,26 @@
       color: var(--text2);
     }
 
+    /* ── Visit button ── */
+    .tool-visit {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 7px 14px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--teal), var(--blue));
+      color: #040C1C;
+      font: inherit;
+      font-size: 12.5px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: opacity 0.15s, transform 0.1s;
+      margin-left: auto;
+      white-space: nowrap;
+    }
+    .tool-visit:hover { opacity: 0.85; }
+    .tool-visit:active { transform: scale(0.96); }
+
     /* ── New search button ── */
     .new-search-btn {
       display: flex;
@@ -1054,6 +1074,7 @@
     .cat-image { background: #5BE3D6; }
     .cat-research { background: #7AA2FF; }
     .cat-video { background: #9B8CFF; }
+    .cat-writing { background: #F4A261; }
 
     /* ── Overlay backdrop for history ── */
     .backdrop {
@@ -1078,158 +1099,147 @@
 <div id="root"></div>
 
 <script type="text/babel">
-// ── data.jsx (inlined) ───────────────────────────────────────────────────────
+// ── data (inlined) ───────────────────────────────────────────────────────────
 const TOOLS = {
-  imagineflux: {
-    id: "imagineflux",
-    name: "ImagineFlux",
-    tagline: "Photoreal image diffusion engine",
-    category: "image",
-    score: 96,
-    pricing: "Freemium · $12/mo",
-    speed: "8s avg",
-    color: "#5BE3D6",
-    glyph: "◐",
-    strengths: ["Photoreal humans", "Brand-safe outputs", "4K upscale"],
+  midjourney: {
+    id: "midjourney", name: "Midjourney", url: "https://midjourney.com",
+    tagline: "World's most popular AI image generator",
+    category: "image", score: 97, pricing: "From $10/mo", speed: "~30s",
+    color: "#5BE3D6", glyph: "✦",
+    strengths: ["Stunning aesthetics", "Consistent style", "Active community"],
   },
-  prismdraw: {
-    id: "prismdraw",
-    name: "PrismDraw",
-    tagline: "Stylized & illustrative generator",
-    category: "image",
-    score: 91,
-    pricing: "Free · Pro $9/mo",
-    speed: "5s avg",
-    color: "#7AA2FF",
-    glyph: "◇",
-    strengths: ["Vector-clean lines", "Style consistency", "Inpainting"],
+  dalle: {
+    id: "dalle", name: "DALL·E 3", url: "https://openai.com/index/dall-e-3",
+    tagline: "OpenAI's photorealistic image model",
+    category: "image", score: 93, pricing: "Free with ChatGPT Plus", speed: "~15s",
+    color: "#7AA2FF", glyph: "◎",
+    strengths: ["Prompt accuracy", "Safe outputs", "Integrated with ChatGPT"],
   },
-  monolith: {
-    id: "monolith",
-    name: "Monolith.art",
-    tagline: "Open-source image model hub",
-    category: "image",
-    score: 84,
-    pricing: "Free · Open source",
-    speed: "12s avg",
-    color: "#9B8CFF",
-    glyph: "◧",
-    strengths: ["No content limits", "Local install", "Custom LoRAs"],
+  firefly: {
+    id: "firefly", name: "Adobe Firefly", url: "https://firefly.adobe.com",
+    tagline: "Commercially safe AI for creatives",
+    category: "image", score: 88, pricing: "Free · Creative Cloud plans", speed: "~10s",
+    color: "#9B8CFF", glyph: "◈",
+    strengths: ["Commercially safe", "Adobe integration", "Style match"],
   },
-  deepresearch: {
-    id: "deepresearch",
-    name: "DeepResearch",
-    tagline: "Long-form research with citations",
-    category: "research",
-    score: 94,
-    pricing: "$20/mo",
-    speed: "2–4 min",
-    color: "#5BE3D6",
-    glyph: "◑",
-    strengths: ["Cites primary sources", "PDF ingestion", "Cross-references"],
+  perplexity: {
+    id: "perplexity", name: "Perplexity AI", url: "https://perplexity.ai",
+    tagline: "Real-time AI search with cited sources",
+    category: "research", score: 96, pricing: "Free · Pro $20/mo", speed: "Instant",
+    color: "#5BE3D6", glyph: "◉",
+    strengths: ["Live web search", "Cited sources", "Follow-up questions"],
   },
-  scholarbeam: {
-    id: "scholarbeam",
-    name: "ScholarBeam",
-    tagline: "Academic search assistant",
-    category: "research",
-    score: 89,
-    pricing: "Free · Pro $15/mo",
-    speed: "Instant",
-    color: "#7AA2FF",
-    glyph: "◆",
-    strengths: ["Peer-review filter", "Citation graphs", "BibTeX export"],
+  claude: {
+    id: "claude", name: "Claude", url: "https://claude.ai",
+    tagline: "Anthropic's AI for deep analysis & writing",
+    category: "research", score: 94, pricing: "Free · Pro $20/mo", speed: "Instant",
+    color: "#7AA2FF", glyph: "◑",
+    strengths: ["200K context window", "Nuanced reasoning", "Document analysis"],
   },
-  brieflyai: {
-    id: "brieflyai",
-    name: "BrieflyAI",
-    tagline: "Fast summarization + Q&A",
-    category: "research",
-    score: 82,
-    pricing: "Free",
-    speed: "Instant",
-    color: "#9B8CFF",
-    glyph: "◔",
-    strengths: ["URL → summary", "Slack/Notion sync", "Quick answers"],
+  chatgpt: {
+    id: "chatgpt", name: "ChatGPT", url: "https://chatgpt.com",
+    tagline: "OpenAI's general-purpose AI assistant",
+    category: "research", score: 92, pricing: "Free · Plus $20/mo", speed: "Instant",
+    color: "#9B8CFF", glyph: "◐",
+    strengths: ["Broad knowledge", "Code & math", "Plugin ecosystem"],
   },
-  vidcraft: {
-    id: "vidcraft",
-    name: "VidCraft Studio",
-    tagline: "Timeline editor with AI cuts",
-    category: "video",
-    score: 95,
-    pricing: "$24/mo",
-    speed: "Realtime",
-    color: "#5BE3D6",
-    glyph: "▷",
-    strengths: ["Auto-cut on speech", "Captions", "Color match"],
+  runway: {
+    id: "runway", name: "Runway ML", url: "https://runwayml.com",
+    tagline: "Professional AI video generation & editing",
+    category: "video", score: 96, pricing: "Free · Standard $15/mo", speed: "1–3 min",
+    color: "#5BE3D6", glyph: "▷",
+    strengths: ["Text-to-video", "Green screen AI", "Motion brush"],
   },
-  reelforge: {
-    id: "reelforge",
-    name: "ReelForge",
-    tagline: "Short-form social video",
-    category: "video",
-    score: 88,
-    pricing: "Free · $10/mo",
-    speed: "30s render",
-    color: "#7AA2FF",
-    glyph: "▶",
-    strengths: ["Vertical templates", "Trend audio", "One-tap captions"],
+  capcut: {
+    id: "capcut", name: "CapCut", url: "https://capcut.com",
+    tagline: "Free AI video editor for social media",
+    category: "video", score: 90, pricing: "Free · Pro $9.99/mo", speed: "Realtime",
+    color: "#7AA2FF", glyph: "▶",
+    strengths: ["Auto-captions", "Trending templates", "One-tap enhance"],
   },
-  framesmith: {
-    id: "framesmith",
-    name: "FrameSmith",
-    tagline: "Pro-grade NLE with AI assist",
-    category: "video",
-    score: 86,
-    pricing: "$39/mo",
-    speed: "Project-based",
-    color: "#9B8CFF",
-    glyph: "▣",
-    strengths: ["Multicam", "Object removal", "Plug-in ecosystem"],
+  descript: {
+    id: "descript", name: "Descript", url: "https://descript.com",
+    tagline: "Edit video by editing text",
+    category: "video", score: 87, pricing: "Free · Creator $24/mo", speed: "Realtime",
+    color: "#9B8CFF", glyph: "▣",
+    strengths: ["Text-based editing", "Overdub voice", "Screen recording"],
+  },
+  jasper: {
+    id: "jasper", name: "Jasper", url: "https://jasper.ai",
+    tagline: "AI writing for marketing & content",
+    category: "writing", score: 93, pricing: "From $49/mo", speed: "Instant",
+    color: "#5BE3D6", glyph: "✎",
+    strengths: ["Brand voice", "Marketing copy", "50+ templates"],
+  },
+  claudewriting: {
+    id: "claudewriting", name: "Claude", url: "https://claude.ai",
+    tagline: "Thoughtful long-form writing & editing",
+    category: "writing", score: 95, pricing: "Free · Pro $20/mo", speed: "Instant",
+    color: "#7AA2FF", glyph: "◑",
+    strengths: ["Natural tone", "Long documents", "Edits & rewrites"],
+  },
+  chatgptwriting: {
+    id: "chatgptwriting", name: "ChatGPT", url: "https://chatgpt.com",
+    tagline: "Versatile AI for any writing task",
+    category: "writing", score: 91, pricing: "Free · Plus $20/mo", speed: "Instant",
+    color: "#9B8CFF", glyph: "◐",
+    strengths: ["Any format", "Multiple drafts", "Tone adjustment"],
   },
 };
+
 const ROUTES = [
   {
-    match: ["image", "picture", "photo", "logo", "art", "draw", "illustration", "generate"],
-    category: "image", title: "Image generation", icon: "◐",
-    tools: ["imagineflux", "prismdraw", "monolith"],
+    match: ["image", "picture", "photo", "logo", "art", "draw", "illustration", "generate", "design"],
+    category: "image", title: "Image generation", icon: "✦",
+    tools: ["midjourney", "dalle", "firefly"],
     followups: [
-      { id: "style", q: "What style fits best?", opts: ["Photorealistic", "Illustrated", "Abstract", "Vector / flat"] },
-      { id: "use", q: "Where will you use it?", opts: ["Marketing", "Personal", "Print", "Social media"] },
+      { id: "style", q: "What style are you going for?", opts: ["Photorealistic", "Artistic / illustrated", "Abstract", "Logo / vector"] },
+      { id: "use", q: "Where will you use it?", opts: ["Personal project", "Marketing", "Social media", "Print / commercial"] },
     ],
   },
   {
-    match: ["research", "paper", "study", "academic", "cite", "scholar", "summarize", "literature"],
-    category: "research", title: "AI research tool", icon: "◑",
-    tools: ["deepresearch", "scholarbeam", "brieflyai"],
+    match: ["research", "paper", "study", "academic", "cite", "scholar", "summarize", "search", "find", "look up"],
+    category: "research", title: "Research & analysis", icon: "◉",
+    tools: ["perplexity", "claude", "chatgpt"],
     followups: [
-      { id: "depth", q: "How deep does it need to go?", opts: ["Quick answer", "Cited summary", "Full lit review"] },
-      { id: "domain", q: "What's the domain?", opts: ["STEM", "Humanities", "Business", "General"] },
+      { id: "depth", q: "How thorough does it need to be?", opts: ["Quick answer", "Summarised overview", "Deep research with citations"] },
+      { id: "domain", q: "What area?", opts: ["General knowledge", "Academic / STEM", "Business", "Current news"] },
     ],
   },
   {
-    match: ["video", "edit", "footage", "clip", "reel", "youtube", "tiktok", "movie", "film"],
+    match: ["video", "edit", "footage", "clip", "reel", "youtube", "tiktok", "movie", "film", "caption"],
     category: "video", title: "Video editing", icon: "▷",
-    tools: ["vidcraft", "reelforge", "framesmith"],
+    tools: ["runway", "capcut", "descript"],
     followups: [
-      { id: "format", q: "What format are you cutting for?", opts: ["Long-form (YouTube)", "Short-form (Reels/TikTok)", "Cinematic", "Internal / corp"] },
-      { id: "skill", q: "Your editing comfort?", opts: ["Beginner", "Intermediate", "Pro"] },
+      { id: "format", q: "What are you making?", opts: ["Short-form (Reels / TikTok)", "Long-form (YouTube)", "Text-to-video from scratch", "Podcast / talking head"] },
+      { id: "skill", q: "Your editing experience?", opts: ["Beginner", "Intermediate", "Pro"] },
+    ],
+  },
+  {
+    match: ["write", "writing", "essay", "blog", "speech", "email", "copy", "content", "article", "story"],
+    category: "writing", title: "Writing & content", icon: "✎",
+    tools: ["claudewriting", "chatgptwriting", "jasper"],
+    followups: [
+      { id: "type", q: "What are you writing?", opts: ["Creative / personal", "Marketing copy", "Essay / academic", "Emails / business"] },
+      { id: "length", q: "How long?", opts: ["Short (a few sentences)", "Medium (a page)", "Long-form (article / report)"] },
     ],
   },
 ];
+
 const SUGGESTIONS = [
-  "I'm looking for the best AI image generator",
-  "I'm searching for the best AI research tool",
-  "I want to know the best AI for editing videos",
+  "Best AI image generator",
+  "Best AI for research",
+  "Best AI video editor",
   "Help me write a wedding speech",
 ];
+
 const HISTORY_SEED = [
   { prompt: "Best AI for product photography", when: "2h ago", category: "image" },
   { prompt: "Tool to summarize 40-page PDFs", when: "Yesterday", category: "research" },
   { prompt: "Auto-caption my podcast clips", when: "3d ago", category: "video" },
-  { prompt: "Logo generator for coffee shop", when: "Last week", category: "image" },
+  { prompt: "Write a cover letter", when: "Last week", category: "writing" },
 ];
+
 function routePrompt(text) {
   if (!text) return null;
   const t = text.toLowerCase();
@@ -1240,21 +1250,26 @@ function routePrompt(text) {
   }
   return best;
 }
+
 function reasoningFor(toolId, route, refinements) {
   const refs = Object.values(refinements || {}).filter(Boolean);
   const base = {
-    imagineflux: `Top match for ${refs[0]?.toLowerCase() || "photoreal"} output. Highest score on brand-safe and resolution benchmarks.`,
-    prismdraw: `Strong on stylized work and vector-clean output. Best when consistency across a series matters.`,
-    monolith: `Free and open. Pick this if you want full control, local install, or custom-trained models.`,
-    deepresearch: `Best for ${refs[0]?.toLowerCase() || "deep"} work that needs citations you can defend.`,
-    scholarbeam: `Built for academic rigor — peer-review filter and citation graphs.`,
-    brieflyai: `Fastest path to a usable answer. Free tier covers most light research.`,
-    vidcraft: `Best balance of pro features and AI assists. Auto-cut alone saves hours.`,
-    reelforge: `Optimized for ${refs[0]?.toLowerCase().includes("short") ? "short-form" : "social"} — templates, trend audio, captions.`,
-    framesmith: `Pro NLE with deep plug-in support. Choose this if you're already in a serious workflow.`,
+    midjourney: `The go-to for stunning, aesthetic images. Best-in-class for ${refs[0]?.toLowerCase() || "artistic"} output and style consistency.`,
+    dalle: `OpenAI's model excels at following prompts precisely. Great for ${refs[1]?.toLowerCase() || "versatile"} use — free with ChatGPT Plus.`,
+    firefly: `Adobe's model is built for ${refs[1]?.toLowerCase().includes("commercial") ? "commercial" : "creative"} work — all outputs are licensed safe to use.`,
+    perplexity: `Best for real-time answers with sources you can verify. Searches the live web for ${refs[1]?.toLowerCase() || "any topic"}.`,
+    claude: `Exceptional at deep, nuanced analysis — ideal for ${refs[0]?.toLowerCase() || "thorough"} research with a 200K context window.`,
+    chatgpt: `Broad and versatile. Handles ${refs[1]?.toLowerCase() || "general"} research well with a huge knowledge base and plugin support.`,
+    runway: `The professional choice for AI video. Text-to-video and smart editing tools make it the ${refs[0]?.toLowerCase().includes("scratch") ? "top pick for generating from scratch" : "top pick for editing"}.`,
+    capcut: `Free, fast, and optimised for ${refs[0]?.toLowerCase().includes("short") ? "short-form social content" : "social media"}. Auto-captions and trending templates built in.`,
+    descript: `Edit video by editing a transcript — perfect for ${refs[0]?.toLowerCase().includes("podcast") ? "podcasts and talking-head content" : "fast, text-based editing"}.`,
+    jasper: `Purpose-built for marketing copy. Best if you need brand voice consistency and ${refs[0]?.toLowerCase() || "professional"} content at scale.`,
+    claudewriting: `Produces the most natural, human-sounding writing. Great for ${refs[0]?.toLowerCase() || "any"} long-form content and thoughtful rewrites.`,
+    chatgptwriting: `Highly flexible — handles ${refs[0]?.toLowerCase() || "any"} writing format quickly with easy tone and style adjustments.`,
   };
-  return base[toolId] || `Strong fit for ${route.title.toLowerCase()}.`;
+  return base[toolId] || `Strong match for ${route.title.toLowerCase()}.`;
 }
+
 window.HOA = { TOOLS, ROUTES, SUGGESTIONS, HISTORY_SEED, routePrompt, reasoningFor };
 </script>
 
@@ -1767,8 +1782,8 @@ function Header({ showHistory, onToggleHistory, compareMode, onToggleCompare, ph
   return (
     <header className="header">
       <div className="logo">
-        <div className="logo-mark">H</div>
-        <span className="logo-name">House <span>Of</span> AI</span>
+        <div className="logo-mark">S</div>
+        <span className="logo-name">Scout<span>.</span></span>
       </div>
       <div className="header-actions">
         {phase === 'results' && (
@@ -1799,10 +1814,10 @@ function Hero({ inputRef, inputVal, setInputVal, onSubmit }) {
   return (
     <>
       <div className="hero">
-        <div className="hero-eyebrow">Live · 200+ AI tools indexed</div>
-        <h1>Find the <em>perfect AI</em><br />for anything</h1>
+        <div className="hero-eyebrow">Live · 100+ AI tools indexed</div>
+        <h1>Find the <em>right AI</em><br />for anything</h1>
         <p className="hero-sub">
-          Describe what you need — we'll match you to the best AI tool, ranked by fit.
+          Describe what you need — Scout matches you to the best AI tool, ranked by fit.
         </p>
       </div>
 
@@ -2032,6 +2047,11 @@ function ToolCard({
               <span key={s} className="strength-tag">{s}</span>
             ))}
           </div>
+        )}
+        {tool.url && (
+          <a className="tool-visit" href={tool.url} target="_blank" rel="noopener noreferrer">
+            Visit →
+          </a>
         )}
       </div>
     </div>
